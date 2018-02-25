@@ -29,7 +29,7 @@ const parseVideos = (video) => {
     .match(/\/pictures\/\w+/gi)[0]
     .replace(/\/pictures\//gi, '');
   const videoThumbnailUrl = `https://i.vimeocdn.com/video/${videoThumbnail}`;
-  const authorThumbnail = video.user.pcitures.uri
+  const authorThumbnail = video.user.pictures.uri
     .match(/\/pictures\/\w+/gi)[0]
     .replace(/\/pictures\//gi, '');
   const authorThumbnailUrl = `https://i.vimeocdn.com/portrait/${authorThumbnail}`;
