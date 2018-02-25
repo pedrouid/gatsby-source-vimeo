@@ -1,17 +1,26 @@
-const axios = require('axios')
+const axios = require('axios');
 
-
-const getVideos = ()
+const getVideos = ({ clientID, clientSecret, userID }) => {
+  const url = `https://api.vimeo.com/users/${userID}/videos`;
+  return axios.get(url, {
+    auth: {
+      username: clientID,
+      password: clientSecret,
+    },
+  });
+};
 
 exports.sourceNodes = async ({ boundActionCreators }, { clientID, clientSecret, userID }) => {
   const { createNode } = boundActionCreators;
-  // Create nodes here, generally by downloading data
-  // from a remote API.
-  const data = await getVideos(REMOTE_API);
 
-  // Process data into nodes.
-  data.forEach(datum => createNode(processDatum(datum)));
+  try {
+    const data = await getVideos({ clientID, clientSecret, userID });
 
-  // We're done, return.
-  return;
+    const processDatum = datum => JSON.parse(datum);
+
+    data.forEach(datum => createNode(processDatum(datum)));
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  }
 };
