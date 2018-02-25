@@ -3,20 +3,11 @@
   "description": "Gatsby source plugin for fetching video information from Vimeo as a data source",
   "version": "1.0.0",
   "author": "Pedro Gomes <pedrouid@protonmail.com",
-  "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "gatsby"
-  ],
+  "keywords": ["gatsby", "source", "plugin", "vimeo"],
   "license": "MIT",
   "main": "index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby.git"
+  "dependencies": {
+    "axios": "^0.18.0"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
@@ -24,5 +15,15 @@
     "eslint-plugin-import": "^2.9.0",
     "eslint-plugin-jsx-a11y": "^6.0.3",
     "eslint-plugin-react": "^7.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gatsbyjs/gatsby.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gatsbyjs/gatsby/issues"
   }
 }
