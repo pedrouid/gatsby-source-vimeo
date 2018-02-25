@@ -4,25 +4,30 @@ const crypto = require('crypto');
 const getVideos = async ({
   url, clientID, clientSecret, userID,
 }) => {
-  const _url = url || `https://api.vimeo.com/users/${userID}/videos?per_page=100`;
-  const response = await axios.get(_url, {
-    auth: {
-      username: clientID,
-      password: clientSecret,
-    },
-  });
-
-  let videos = response.data.data;
-
-  if (response.data.paging.next) {
-    const moreVideos = await getVideos({
-      url: `https://api.vimeo.com${response.data.paging.next}`,
-      clientID,
-      clientSecret,
+  try {
+    const _url = url || `https://api.vimeo.com/users/${userID}/videos?per_page=100`;
+    const response = await axios.get(_url, {
+      auth: {
+        username: clientID,
+        password: clientSecret,
+      },
     });
-    videos = videos.concat(moreVideos);
+
+    let videos = response.data.data;
+
+    if (response.data.paging.next) {
+      const moreVideos = await getVideos({
+        url: `https://api.vimeo.com${response.data.paging.next}`,
+        clientID,
+        clientSecret,
+      });
+      videos = videos.concat(moreVideos);
+    }
+    return videos;
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
   }
-  return videos;
 };
 
 const digest = resource =>
