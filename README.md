@@ -7,7 +7,7 @@ https://developer.vimeo.com/apps/new
 
 ## Install
 
-`npm install --save gatsby-source-viemo`
+`npm install --save gatsby-source-vimeo`
 
 ## How to use
 
@@ -19,9 +19,9 @@ plugins: [
     options: {
       clientID: 'INSERT_YOUR_CLIENT_IDENTIFIER',
       clientSecret: 'INSERT_YOUR_CLIENT_SECRET',
-      userID: 'INSERT_VIMEO_USER_ID_TO_FETCH_VIDEOS'
-    }
-  }
+      userID: 'INSERT_VIMEO_USER_ID_TO_FETCH_VIDEOS',
+    },
+  },
 ];
 ```
 
