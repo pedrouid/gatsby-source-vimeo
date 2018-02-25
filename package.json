@@ -1,7 +1,7 @@
 {
   "name": "gatsby-source-vimeo",
   "description": "Gatsby source plugin for fetching video information from Vimeo as a data source",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "Pedro Gomes <pedrouid@protonmail.com",
   "keywords": ["gatsby", "source", "plugin", "vimeo"],
   "license": "MIT",
