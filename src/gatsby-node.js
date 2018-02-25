@@ -52,9 +52,9 @@ const parseVideos = (video) => {
       url: video.user.link,
       bio: video.user.bio,
       thumbnail: {
-        small: `${videoThumbnailUrl}_72x72.jpg`,
-        medium: `${videoThumbnailUrl}_144x144.jpg`,
-        large: `${videoThumbnailUrl}_288x288.jpg`,
+        small: `${authorThumbnailUrl}_72x72.jpg`,
+        medium: `${authorThumbnailUrl}_144x144.jpg`,
+        large: `${authorThumbnailUrl}_288x288.jpg`,
       },
     },
   };
