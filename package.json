@@ -21,9 +21,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby.git"
+    "url": "https://github.com/pedrouid/gatsby-source-vimeo.git"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/pedrouid/gatsby-source-vimeo/issues"
   }
 }
