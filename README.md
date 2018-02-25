@@ -27,5 +27,5 @@ plugins: [
 
 ###### Note
 
-Remember that if you are only fetching video information, so this will provide
+Remember you are only fetching video information, so this will provide
 you with Video titles, descriptions, embed iframes and thumbnails.
