@@ -29,4 +29,4 @@ plugins: [
 ###### Note
 
 Remember you are only fetching video information, so this will provide
-you with Video titles, descriptions, embed iframes and thumbnails.
+you with Video titles, descriptions, embedded iframes and thumbnails.

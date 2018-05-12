@@ -91,11 +91,18 @@ const parseVideos = (video) => {
   };
 };
 
-exports.sourceNodes = async ({ boundActionCreators }, { clientID, clientSecret, userID }) => {
+exports.sourceNodes = async (
+  { boundActionCreators },
+  {
+    clientID, clientSecret, userID, searchQuery,
+  },
+) => {
   const { createNode } = boundActionCreators;
 
   try {
-    const videos = await getVideos({ clientID, clientSecret, userID });
+    const videos = await getVideos({
+      clientID, clientSecret, userID, searchQuery,
+    });
 
     videos.forEach(video => createNode(parseVideos(video)));
   } catch (error) {
