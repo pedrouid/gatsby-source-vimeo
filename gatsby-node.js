@@ -2,10 +2,12 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 const getVideos = async ({
-  url, clientID, clientSecret, userID,
+  url, clientID, clientSecret, userID, searchQuery,
 }) => {
   try {
-    const _url = url || `https://api.vimeo.com/users/${userID}/videos?per_page=100`;
+    const _searchQuery = searchQuery || '';
+    const _url =
+      url || `https://api.vimeo.com/users/${userID}/videos?per_page=100&query=${_searchQuery}`;
     const response = await axios.get(_url, {
       auth: {
         username: clientID,
