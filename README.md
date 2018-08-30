@@ -33,19 +33,25 @@ plugins: [
 
 ## Plugin Options
 
-### clientID [REQUIRED]
+### clientID
+
+**REQUIRED**
 
 ```
 Client identifier from Vimeo Developer dashboard
 ```
 
-### clientSecret [REQUIRED]
+### clientSecret
+
+**REQUIRED**
 
 ```
 Client secret from Vimeo Developer dashboard
 ```
 
-### userID [REQUIRED]
+### userID
+
+**REQUIRED**
 
 ```
 User ID that you want to fetch videos from
@@ -53,24 +59,24 @@ User ID that you want to fetch videos from
 on browser console to get the userID)
 ```
 
-### searchQuery [OPTIONAL]
+### searchQuery
+
+**OPTIONAL**
 
 ```
 Keywords to filter videos to be fetched
 (comma separated)
 ```
 
-### transformer [OPTIONAL]
+### transformer
+
+**OPTIONAL**
 
 ```
 Transformer function to add or alter existing fields
 ```
 
-###### Note
+## Note
 
 Remember you are only fetching video information, so this will provide
 you with Video titles, descriptions, embedded iframes and thumbnails.
-
-```
-
-```
