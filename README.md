@@ -20,17 +20,40 @@ plugins: [
       clientID: 'INSERT_YOUR_CLIENT_IDENTIFIER',
       clientSecret: 'INSERT_YOUR_CLIENT_SECRET',
       userID: 'INSERT_VIMEO_USER_ID_TO_FETCH_VIDEOS',
-      searchQuery: 'INSERT_SEARCH_QUERY [OPTIONAL]',
-      transformer (video) {
-        // Transform the video data [OPTIONAL]
-        // i.e. Add extra fields or alter existing field
-        video.newField = 'value'
-        return video
-      }
+      searchQuery: 'INSERT_SEARCH_QUERY', // Optional
+      transformer(video) {
+        // Optional
+        video.newField = 'value';
+        return video;
+      },
     },
   },
 ];
 ```
+
+## Plugin Options
+
+#### clientID
+
+Client identifier from Vimeo Developer dashboard **REQUIRED**
+
+#### clientSecret
+
+Client secret from Vimeo Developer dashboard **REQUIRED**
+
+#### userID
+
+User ID that you want to fetch videos from **REQUIRED**
+(visit Vimeo profile and run `window.vimeo.config.profile.app_config.user.id` on browser console to get the userID)
+
+#### searchQuery
+
+Keywords to filter videos to be fetched **OPTIONAL**
+(comma separated)
+
+#### transformer
+
+Transformer function to add or alter existing fields **OPTIONAL**
 
 ###### Note
 
