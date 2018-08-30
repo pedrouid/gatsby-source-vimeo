@@ -5,9 +5,9 @@ const getVideos = async ({
   url, clientID, clientSecret, userID, searchQuery,
 }) => {
   try {
-    const _searchQuery = searchQuery || '';
+    const _searchQuery = searchQuery && searchQuery !== '' ? `&query=${searchQuery}` : '';
     const _url =
-      url || `https://api.vimeo.com/users/${userID}/videos?per_page=100&query=${_searchQuery}`;
+      url || `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`;
     const response = await axios.get(_url, {
       auth: {
         username: clientID,
