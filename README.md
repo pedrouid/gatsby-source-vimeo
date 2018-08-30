@@ -33,27 +33,29 @@ plugins: [
 
 ## Plugin Options
 
+```
 #### clientID
 
-Client identifier from Vimeo Developer dashboard **REQUIRED**
+**REQUIRED** Client identifier from Vimeo Developer dashboard
 
 #### clientSecret
 
-Client secret from Vimeo Developer dashboard **REQUIRED**
+**REQUIRED** Client secret from Vimeo Developer dashboard
 
 #### userID
 
-User ID that you want to fetch videos from **REQUIRED**
+**REQUIRED** User ID that you want to fetch videos from
 (visit Vimeo profile and run `window.vimeo.config.profile.app_config.user.id` on browser console to get the userID)
 
 #### searchQuery
 
-Keywords to filter videos to be fetched **OPTIONAL**
+**OPTIONAL** Keywords to filter videos to be fetched
 (comma separated)
 
 #### transformer
 
-Transformer function to add or alter existing fields **OPTIONAL**
+**OPTIONAL** Transformer function to add or alter existing fields
+```
 
 ###### Note
 
