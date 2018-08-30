@@ -21,6 +21,12 @@ plugins: [
       clientSecret: 'INSERT_YOUR_CLIENT_SECRET',
       userID: 'INSERT_VIMEO_USER_ID_TO_FETCH_VIDEOS',
       searchQuery: 'INSERT_SEARCH_QUERY [OPTIONAL]',
+      transformer (video) {
+        // Transform the video data [OPTIONAL]
+        // i.e. Add extra fields or alter existing field
+        video.newField = 'value'
+        return video
+      }
     },
   },
 ];

@@ -2,7 +2,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 const getVideos = async ({
-  url, clientID, clientSecret, userID, searchQuery,
+  url, clientID, clientSecret, userID, searchQuery, transformer,
 }) => {
   try {
     const _searchQuery = searchQuery && searchQuery !== '' ? `&query=${searchQuery}` : '';
@@ -22,6 +22,7 @@ const getVideos = async ({
         url: `https://api.vimeo.com${response.data.paging.next}`,
         clientID,
         clientSecret,
+        transformer,
       });
       videos = videos.concat(moreVideos);
     }
@@ -38,7 +39,7 @@ const digest = resource =>
     .update(JSON.stringify(resource))
     .digest('hex');
 
-const parseVideos = (video) => {
+const parseVideos = (video, transformer) => {
   const videoID = video.uri.replace('/videos/', '');
   const videoThumbnail = video.pictures.uri
     .match(/\/pictures\/\w+/gi)[0]
@@ -51,7 +52,7 @@ const parseVideos = (video) => {
     .replace(/\/pictures\//gi, '');
   const userThumbnailUrl = `https://i.vimeocdn.com/portrait/${userThumbnail}`;
 
-  return {
+  let videoInfo = {
     id: videoID,
     parent: '__SOURCE__',
     children: [],
@@ -89,22 +90,30 @@ const parseVideos = (video) => {
       },
     },
   };
+
+  return transformer && typeof transformer === 'function'
+    ? transformer(videoInfo)
+    : videoInfo;
 };
 
 exports.sourceNodes = async (
   { boundActionCreators },
   {
-    clientID, clientSecret, userID, searchQuery,
+    clientID, clientSecret, userID, searchQuery, transformer,
   },
 ) => {
   const { createNode } = boundActionCreators;
 
   try {
     const videos = await getVideos({
-      clientID, clientSecret, userID, searchQuery,
+      clientID, clientSecret, userID, searchQuery, transformer,
     });
 
-    videos.forEach(video => createNode(parseVideos(video)));
+    if (transformer && typeof transformer !== 'function') {
+      console.error('[gatsby-source-vimeo] Key `transformer` should be of type `function`.');
+    }
+
+    videos.forEach(video => createNode(parseVideos(video, transformer)));
   } catch (error) {
     console.error(error);
     process.exit(1);
