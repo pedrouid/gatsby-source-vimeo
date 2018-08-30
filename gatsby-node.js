@@ -6,8 +6,7 @@ const getVideos = async ({
 }) => {
   try {
     const _searchQuery = searchQuery && searchQuery !== '' ? `&query=${searchQuery}` : '';
-    const _url =
-      url || `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`;
+    const _url = url || `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`;
     const response = await axios.get(_url, {
       auth: {
         username: clientID,
@@ -52,7 +51,7 @@ const parseVideos = (video, transformer) => {
     .replace(/\/pictures\//gi, '');
   const userThumbnailUrl = `https://i.vimeocdn.com/portrait/${userThumbnail}`;
 
-  let videoInfo = {
+  const videoInfo = {
     id: videoID,
     parent: '__SOURCE__',
     children: [],
@@ -91,9 +90,7 @@ const parseVideos = (video, transformer) => {
     },
   };
 
-  return transformer && typeof transformer === 'function'
-    ? transformer(videoInfo)
-    : videoInfo;
+  return transformer && typeof transformer === 'function' ? transformer(videoInfo) : videoInfo;
 };
 
 exports.sourceNodes = async (
@@ -106,7 +103,11 @@ exports.sourceNodes = async (
 
   try {
     const videos = await getVideos({
-      clientID, clientSecret, userID, searchQuery, transformer,
+      clientID,
+      clientSecret,
+      userID,
+      searchQuery,
+      transformer,
     });
 
     if (transformer && typeof transformer !== 'function') {
