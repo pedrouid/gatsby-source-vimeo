@@ -2,6 +2,8 @@
 
 Source plugin for pulling data into Gatsby from Vimeo user videos endpoint.
 
+## Pre-requirements
+
 You will need to register on Vimeo to get API keys to use this plugin:
 https://developer.vimeo.com/apps/new
 
