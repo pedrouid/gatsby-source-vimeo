@@ -1,12 +1,22 @@
 const axios = require('axios');
 const crypto = require('crypto');
 
+const { createRemoteFileNode } = require('gatsby-source-filesystem');
+
 const getVideos = async ({
-  url, clientID, clientSecret, userID, searchQuery, transformer,
+  url,
+  clientID,
+  clientSecret,
+  userID,
+  searchQuery,
+  transformer,
 }) => {
   try {
-    const _searchQuery = searchQuery && searchQuery !== '' ? `&query=${searchQuery}` : '';
-    const _url = url || `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`;
+    const _searchQuery =
+      searchQuery && searchQuery !== '' ? `&query=${searchQuery}` : '';
+    const _url =
+      url ||
+      `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`;
     const response = await axios.get(_url, {
       auth: {
         username: clientID,
@@ -90,16 +100,36 @@ const parseVideos = (video, transformer) => {
     },
   };
 
-  return transformer && typeof transformer === 'function' ? transformer(videoInfo) : videoInfo;
+  return transformer && typeof transformer === 'function'
+    ? transformer(videoInfo)
+    : videoInfo;
 };
 
+const createImageNode = (createNodeId, createNode, store, cache) => url =>
+  createRemoteFileNode({
+    url,
+    store,
+    cache,
+    createNode,
+    createNodeId,
+  });
+
 exports.sourceNodes = async (
-  { boundActionCreators },
   {
-    clientID, clientSecret, userID, searchQuery, transformer,
+    boundActionCreators, createNodeId, store, cache,
+  },
+  {
+    clientID,
+    clientSecret,
+    userID,
+    searchQuery,
+    transformer,
+    videoThumbnailNodeName = 'coverImage',
+    userThumbnailNodeName = 'userImage',
   },
 ) => {
   const { createNode } = boundActionCreators;
+  const createImage = createImageNode(createNodeId, createNode, store, cache);
 
   try {
     const videos = await getVideos({
@@ -114,7 +144,28 @@ exports.sourceNodes = async (
       console.error('[gatsby-source-vimeo] Key `transformer` should be of type `function`.');
     }
 
-    videos.forEach(video => createNode(parseVideos(video, transformer)));
+    let node;
+    const allVideos = videos.map(async (video) => {
+      node = createNode(parseVideos(video, transformer));
+      try {
+        const coverNode = await createImage(node.thumbnail.hd);
+        const coverNodeLink = `${videoThumbnailNodeName}___NODE`;
+        node[coverNodeLink] = coverNode.id;
+      } catch (e) {
+        console.error(`Failed creating image ${node.thumbnail.hd} for node: ${node.title}`);
+        console.error(e);
+      }
+      try {
+        const userNode = await createImage(node.user.thumbnail.large);
+        const userNodeLink = `${userThumbnailNodeName}___NODE`;
+        node[userNodeLink] = userNode.id;
+      } catch (e) {
+        console.error(`Failed creating image ${node.user.thumbnail.large} for node: ${node.user.name}`);
+        console.error(e);
+      }
+    });
+
+    await Promise.all(allVideos);
   } catch (error) {
     console.error(error);
     process.exit(1);

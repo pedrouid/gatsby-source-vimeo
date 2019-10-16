@@ -14,7 +14,8 @@
   "license": "MIT",
   "main": "index.js",
   "dependencies": {
-    "axios": "^0.18.0"
+    "axios": "^0.18.0",
+    "gatsby-source-filesystem": "^2.1.33"
   },
   "devDependencies": {
     "eslint": "^4.18.1",
@@ -24,7 +25,8 @@
     "eslint-plugin-react": "^7.7.0"
   },
   "scripts": {
-    "lint": "eslint gatsby-node.js"
+    "lint": "eslint gatsby-node.js",
+    "lint:fix": "eslint --fix gatsby-node.js"
   },
   "repository": {
     "type": "git",
