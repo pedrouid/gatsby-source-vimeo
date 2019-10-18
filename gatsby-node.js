@@ -1,5 +1,8 @@
 const axios = require('axios');
+const axiosRetry = require('axios-retry');
 const crypto = require('crypto');
+
+axiosRetry(axios, { retries: 3, retryDelay: axiosRetry.exponentialDelay });
 
 const { createRemoteFileNode } = require('gatsby-source-filesystem');
 
@@ -48,7 +51,7 @@ const digest = resource =>
     .update(JSON.stringify(resource))
     .digest('hex');
 
-const parseVideos = (video, transformer) => {
+const parseVideos = async (video, transformer) => {
   const videoID = video.uri.replace('/videos/', '');
   const videoThumbnail = video.pictures.uri
     .match(/\/pictures\/\w+/gi)[0]
@@ -56,10 +59,13 @@ const parseVideos = (video, transformer) => {
   const videoThumbnailUrl = `https://i.vimeocdn.com/video/${videoThumbnail}`;
 
   const userID = video.uri.replace('/users/', '');
-  const userThumbnail = video.user.pictures.uri
-    .match(/\/pictures\/\w+/gi)[0]
-    .replace(/\/pictures\//gi, '');
-  const userThumbnailUrl = `https://i.vimeocdn.com/portrait/${userThumbnail}`;
+  let userThumbnailUrl;
+  if (video.user.pictures.uri) {
+    const userThumbnail = video.user.pictures.uri
+      .match(/\/pictures\/\w+/gi)[0]
+      .replace(/\/pictures\//gi, '');
+    userThumbnailUrl = `https://i.vimeocdn.com/portrait/${userThumbnail}`;
+  }
 
   const videoInfo = {
     id: videoID,
@@ -81,6 +87,7 @@ const parseVideos = (video, transformer) => {
       large: `${videoThumbnailUrl}_1280x720.jpg`,
       hd: `${videoThumbnailUrl}_1920x1080.jpg`,
     },
+    tags: video.tags,
     user: {
       id: userID,
       parent: '__SOURCE__',
@@ -92,11 +99,13 @@ const parseVideos = (video, transformer) => {
       name: video.user.name,
       url: video.user.link,
       bio: video.user.bio,
-      thumbnail: {
-        small: `${userThumbnailUrl}_72x72.jpg`,
-        medium: `${userThumbnailUrl}_144x144.jpg`,
-        large: `${userThumbnailUrl}_288x288.jpg`,
-      },
+      ...(userThumbnailUrl && {
+        thumbnail: {
+          small: `${userThumbnailUrl}_72x72.jpg`,
+          medium: `${userThumbnailUrl}_144x144.jpg`,
+          large: `${userThumbnailUrl}_288x288.jpg`,
+        },
+      }),
     },
   };
 
@@ -146,22 +155,31 @@ exports.sourceNodes = async (
 
     let node;
     const allVideos = videos.map(async (video) => {
-      node = createNode(parseVideos(video, transformer));
+      const parsedVideo = await parseVideos(video, transformer);
+      node = await createNode(parsedVideo);
       try {
-        const coverNode = await createImage(node.thumbnail.hd);
+        const coverNode = await createImage(parsedVideo.thumbnail.hd);
         const coverNodeLink = `${videoThumbnailNodeName}___NODE`;
-        node[coverNodeLink] = coverNode.id;
+        node = {
+          ...node,
+          [coverNodeLink]: coverNode.id,
+        };
       } catch (e) {
-        console.error(`Failed creating image ${node.thumbnail.hd} for node: ${node.title}`);
+        console.error(`Failed creating cover image ${parsedVideo.thumbnail.hd} for node: ${node.title}`);
         console.error(e);
       }
-      try {
-        const userNode = await createImage(node.user.thumbnail.large);
-        const userNodeLink = `${userThumbnailNodeName}___NODE`;
-        node[userNodeLink] = userNode.id;
-      } catch (e) {
-        console.error(`Failed creating image ${node.user.thumbnail.large} for node: ${node.user.name}`);
-        console.error(e);
+      if (parsedVideo.user.thumbnail) {
+        try {
+          const userNode = await createImage(parsedVideo.user.thumbnail.large);
+          const userNodeLink = `${userThumbnailNodeName}___NODE`;
+          node = {
+            ...node,
+            [userNodeLink]: userNode.id,
+          };
+        } catch (e) {
+          console.error(`[gatsby-source-vimeo] Failed creating user image ${parsedVideo.user.thumbnail.large} for node: ${parsedVideo.user.name}`);
+          console.error(e);
+        }
       }
     });
 
