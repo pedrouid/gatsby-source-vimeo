@@ -2,17 +2,25 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 const getVideos = async ({
-  url, clientID, clientSecret, userID, searchQuery, transformer,
+  url, clientID, clientSecret, userID, searchQuery, transformer, accessToken, folderID
 }) => {
   try {
     const _searchQuery = searchQuery && searchQuery !== '' ? `&query=${searchQuery}` : '';
-    const _url = url || `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`;
-    const response = await axios.get(_url, {
+    const _url = url || (folderID ? `https://api.vimeo.com/users/${userID}/projects/${folderID}/videos?per_page=100`
+                                 : `https://api.vimeo.com/users/${userID}/videos?per_page=100${_searchQuery}`);
+    
+    const config = accessToken ? {
+      headers: {
+        Authorization: `bearer ${accessToken}`
+      }
+    } : {
       auth: {
         username: clientID,
-        password: clientSecret,
-      },
-    });
+        password: clientSecret
+      }
+    }
+
+    const response = await axios.get(_url, config);
 
     let videos = response.data.data;
 
@@ -38,11 +46,11 @@ const digest = resource =>
     .update(JSON.stringify(resource))
     .digest('hex');
 
-const parseVideos = (video, transformer) => {
-  const videoID = video.uri.replace('/videos/', '');
-  const videoThumbnail = video.pictures.uri
+const parseVideos = (video, transformer, tag) => {
+  const videoID = video.uri.replace('/videos/', '');  
+  const videoThumbnail = video.pictures.uri ? video.pictures.uri
     .match(/\/pictures\/\w+/gi)[0]
-    .replace(/\/pictures\//gi, '');
+    .replace(/\/pictures\//gi, '') : '';
   const videoThumbnailUrl = `https://i.vimeocdn.com/video/${videoThumbnail}`;
 
   const userID = video.uri.replace('/users/', '');
@@ -59,6 +67,7 @@ const parseVideos = (video, transformer) => {
       type: 'Vimeo____video',
       contentDigest: digest(video),
     },
+    tag, 
     title: video.name,
     description: video.description,
     date: video.created_time,
@@ -96,25 +105,28 @@ const parseVideos = (video, transformer) => {
 exports.sourceNodes = async (
   { boundActionCreators },
   {
-    clientID, clientSecret, userID, searchQuery, transformer,
+    url, clientID, clientSecret, userID, searchQuery, transformer, accessToken, folderID, tag
   },
 ) => {
   const { createNode } = boundActionCreators;
 
   try {
     const videos = await getVideos({
+      url,
       clientID,
       clientSecret,
       userID,
       searchQuery,
       transformer,
+      accessToken,
+      folderID
     });
 
     if (transformer && typeof transformer !== 'function') {
       console.error('[gatsby-source-vimeo] Key `transformer` should be of type `function`.');
     }
 
-    videos.forEach(video => createNode(parseVideos(video, transformer)));
+    videos.forEach(video => createNode(parseVideos(video, transformer, tag)));
   } catch (error) {
     console.error(error);
     process.exit(1);
