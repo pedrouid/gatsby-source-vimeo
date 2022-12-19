@@ -53,10 +53,7 @@ const digest = resource =>
 
 const parseVideos = async (video, transformer) => {
   const videoID = video.uri.replace('/videos/', '');
-  const videoThumbnail = video.pictures.uri
-    .match(/\/pictures\/\w+/gi)[0]
-    .replace(/\/pictures\//gi, '');
-  const videoThumbnailUrl = `https://i.vimeocdn.com/video/${videoThumbnail}`;
+  const videoThumbnails = video.pictures.sizes
 
   const userID = video.uri.replace('/users/', '');
   let userThumbnailUrl;
@@ -82,10 +79,10 @@ const parseVideos = async (video, transformer) => {
     duration: video.duration,
     iframe: video.embed.html,
     thumbnail: {
-      small: `${videoThumbnailUrl}_295x166.jpg`,
-      medium: `${videoThumbnailUrl}_640x360.jpg`,
-      large: `${videoThumbnailUrl}_1280x720.jpg`,
-      hd: `${videoThumbnailUrl}_1920x1080.jpg`,
+      small: videoThumbnails[2].link, // 2
+      medium: videoThumbnails[3].link, // 3
+      large: videoThumbnails[5].link, // 5
+      hd: videoThumbnails[6].link, // 6
     },
     tags: video.tags,
     user: {
